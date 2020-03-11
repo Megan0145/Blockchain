@@ -142,27 +142,27 @@ def mine():
         }
         return jsonify(response), 400
 
-    # else request body is valid
+    # else request body is valid   
+    # check if the proof valid by calling valid_proof method, passing in the proof passed in req body and the previous hash obtained from calling hash function on last block in chain
+    proof = data["proof"]
+    previous_hash = blockchain.hash(blockchain.last_block)
+    if blockchain.valid_proof(proof, previous_hash) is False:
+        # return failure message and status 400
+        response = {
+            "message": f'Failure. {data["proof"]} is not a valid proof'
+        }    
+        return jsonify(response), 400  
+       
+    # else the proof is not valid 
     else:
-        # check if the proof valid by calling valid_proof method, passing in the last block in the chain and the proof passed in req body
-        if blockchain.valid_proof(blockchain.last_block, data["proof"]) == True:
-            # if so, get the previous hash for the new block by calling the hash method and passing in the last block in the chain
-            previous_hash = blockchain.hash(blockchain.last_block)
-            # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
-            block = blockchain.new_block(data["proof"], previous_hash)
-            # return success message and the new block & status 200
-            response = {
-                "message": "New Block Forged",
-                "block" : block
-            }
-            return jsonify(response), 200    
-        # else the proof is not valid 
-        else:
-            # return failure message and status 400
-            response = {
-                "message": f'Failure. {data["proof"]} is not a valid proof'
-            }    
-            return jsonify(response), 400    
+        # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
+        block = blockchain.new_block(proof, previous_hash)
+        # return success message and the new block & status 200
+        response = {
+            "message": "New Block Forged",
+            "block" : block
+        }
+        return jsonify(response), 200      
 
 
 @app.route('/chain', methods=['GET'])

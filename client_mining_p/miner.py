@@ -18,7 +18,7 @@ def proof_of_work(block):
     # initalise proof to 0
     proof = 0
     # call valid_proof method passing in block_string and proof so long as it is returning False, increment proof by 1 on each loop
-    while self.valid_proof(block_string, proof) is False:
+    while valid_proof(block_string, proof) is False:
     # the value of proof increases by 1 on each loop -> once proof is a valid number (the function returns True), exit loop and return proof
         proof += 1
     # return proof
@@ -70,15 +70,25 @@ if __name__ == '__main__':
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
-        # new_proof = ???
+        last_block = data["last_block"]
+        print("Looking for new proof")
+        new_proof = proof_of_work(last_block)
+        print("New proof found")
+        print("")
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
+        print("Attempting to mine")
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
+        print(data)
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+        # if data["message"] == "New Block Forged":
+        #     print(data["block"])
+        # else:
+        #     print(data["message"])    
+        
