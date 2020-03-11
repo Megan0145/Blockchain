@@ -134,22 +134,31 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     data = request.get_json()   
+    # check that id and proof present in request body
+    # if not return error message and status 400
     if "id" not in data.keys() or "proof" not in data.keys():
         response = {
             "message": "Please provide an id and a proof in request body"
         }
         return jsonify(response), 400
 
+    # else request body is valid
     else:
+        # check if the proof valid by calling valid_proof method, passing in the last block in the chain and the proof passed in req body
         if blockchain.valid_proof(blockchain.last_block, data["proof"]) == True:
+            # if so, get the previous hash for the new block by calling the hash method and passing in the last block in the chain
             previous_hash = blockchain.hash(blockchain.last_block)
+            # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
             block = blockchain.new_block(data["proof"], previous_hash)
+            # return success message and the new block & status 200
             response = {
                 "message": "Success!",
                 "block" : block
             }
             return jsonify(response), 200    
+        # else the proof is not valid 
         else:
+            # return failure message and status 400
             response = {
                 "message": f'Failure. {data["proof"]} is not a valid proof'
             }    
