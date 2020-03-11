@@ -153,7 +153,7 @@ def mine():
         }    
         return jsonify(response), 400  
        
-    # else the proof is not valid 
+    # else the proof is valid 
     else:
         # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
         block = blockchain.new_block(proof, previous_hash)
