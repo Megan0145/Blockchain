@@ -104,7 +104,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof(block_string, proof):
         """
-        Validates the Proof:  Does hash(block_string, proof) contain 3
+        Validates the Proof:  Does hash(block_string, proof) contain 6
         leading zeroes?  Return true if the proof is valid
         :param block_string: <string> The stringified block to use to
         check in combination with `proof`
@@ -157,6 +157,10 @@ def full_chain():
     }
     return jsonify(response), 200
 
+@app.route("/last_block", methods=['GET'])
+def get_last_block():
+    response = {"last_block": blockchain.last_block}
+    return jsonify(response), 200
 
 # Run the program on port 5000
 if __name__ == '__main__':
