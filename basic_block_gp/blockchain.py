@@ -113,9 +113,12 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
-        # TODO
-        pass
-        # return True or False
+        # set guess equal to the block_string and proof concatenated and encoded
+        guess = f'{block_string}{proof}'.encode()
+        # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
+        hash_guess = hashlib.sha256(guess).hexdigest()
+        # if the hash_guess string has three zeros at the start of it, return True, else False
+        return hash_guess[:3] == "000"
 
 
 # Instantiate our Node
