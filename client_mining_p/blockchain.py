@@ -118,7 +118,7 @@ class Blockchain(object):
         # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
         hash_guess = hashlib.sha256(guess).hexdigest()
         # if the hash_guess string has three zeros at the start of it, return True, else False
-        return hash_guess[:3] == "000000"
+        return hash_guess[:6] == "000000"
 
 
 # Instantiate our Node
@@ -131,21 +131,29 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['POST'])
 def mine():
-    # Run the proof of work algorithm on the last block of chain to get the next proof
-    # proof = blockchain.proof_of_work(blockchain.last_block)
-    # get the previous hash by hashing the last block of the chain
-    previous_hash = blockchain.hash(blockchain.last_block)
-    # Forge the new Block by adding it to the chain with the proof
-    new_block = blockchain.new_block(proof, previous_hash)
+    data = request.get_json()   
+    if "id" not in data.keys() or "proof" not in data.keys():
+        response = {
+            "message": "Please provide an id and a proof in request body"
+        }
+        return jsonify(response), 400
 
-    response = {
-        # Send a JSON response with the new block
-        "block" : new_block
-    }
-
-    return jsonify(response), 200
+    else:
+        if blockchain.valid_proof(blockchain.last_block, data["proof"]) == True:
+            previous_hash = blockchain.hash(blockchain.last_block)
+            block = blockchain.new_block(data["proof"], previous_hash)
+            response = {
+                "message": "Success!",
+                "block" : block
+            }
+            return jsonify(response), 200    
+        else:
+            response = {
+                "message": f'Failure. {data["proof"]} is not a valid proof'
+            }    
+            return jsonify(response), 400    
 
 
 @app.route('/chain', methods=['GET'])
@@ -165,3 +173,4 @@ def get_last_block():
 # Run the program on port 5000
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
