@@ -30,7 +30,7 @@ class Blockchain(object):
         :return: <dict> New Block
         """
 
-         block = {
+        block = {
             "index": len(self.chain) + 1,
             "timestamp": time(),
             "transactions": self.current_transactions,
@@ -142,7 +142,7 @@ def mine():
 
     response = {
         # Send a JSON response with the new block
-        "block" = new_block
+        "block" : new_block
     }
 
     return jsonify(response), 200
