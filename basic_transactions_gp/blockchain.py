@@ -99,7 +99,7 @@ class Blockchain(object):
         # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
         hash_guess = hashlib.sha256(guess).hexdigest()
         # if the hash_guess string has three zeros at the start of it, return True, else False
-        return hash_guess[:4] == "0000"
+        return hash_guess[:5] == "00000"
 
     def new_transaction(self, sender, recipient, amount):
         """
@@ -159,7 +159,7 @@ def mine():
     else:
         # call new_transaction function to add transaction (has to be done before we add the block to make sure that it's included in the new block)
         # pass in "0" as the sender (we're creating new coins), node_identifier as the recipient (this will be the id of the miner) and 1 as the amount
-        blockchain.new_transaction("0", node_identifier, 1)
+        blockchain.new_transaction("0", data["id"], 1)
         # then create a new block by calling the new_block method passing in the proof passed in the request body and the hash of the last block in the chain
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(proof, previous_hash)
