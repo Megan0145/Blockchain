@@ -3,7 +3,7 @@ import requests
 
 import sys
 import json
-
+import time
 
 def proof_of_work(block):
     """
@@ -41,7 +41,7 @@ def valid_proof(block_string, proof):
     # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
     hash_guess = hashlib.sha256(guess).hexdigest()
     # if the hash_guess string has six zeros at the start of it, return True, else False
-    return hash_guess[:6] == "000000"
+    return hash_guess[:5] == "00000"
 
 
 if __name__ == '__main__':
@@ -73,9 +73,12 @@ if __name__ == '__main__':
 
         # TODO: Get the block from `data` and use it to look for a new proof
         last_block = data["last_block"]
+        print("-------------------------------------------------")
         print("Looking for new proof")
+        start = time.time()
         new_proof = proof_of_work(last_block)
-        print("New proof found")
+        end = time.time()
+        print(f'New proof found in {round(end-start)} seconds')
         print("")
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
@@ -86,13 +89,14 @@ if __name__ == '__main__':
         data = r.json()
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
-        # add 1 to the number of coins mined and print it.  Otherwise,
+        # add 1 to the number of coins mined and print it. Otherwise,
         # print the message from the server.
         if data["message"] == "New Block Forged":
             coins += 1
             print(f'Success: {data["message"]}. Total coins mined: {coins}.')
+            print("-------------------------------------------------")
             print("")
         else:
             print(data["message"])
-            print("")    
-        
+            print("-------------------------------------------------")
+            print("")  
