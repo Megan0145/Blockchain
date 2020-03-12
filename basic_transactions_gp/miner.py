@@ -41,7 +41,7 @@ def valid_proof(block_string, proof):
     # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
     hash_guess = hashlib.sha256(guess).hexdigest()
     # if the hash_guess string has six zeros at the start of it, return True, else False
-    return hash_guess[:6] == "000000"
+    return hash_guess[:4] == "0000"
 
 
 if __name__ == '__main__':

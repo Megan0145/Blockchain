@@ -99,7 +99,7 @@ class Blockchain(object):
         # hash the guess and use hexdigest to convert the resulting hash to a string of hexadecimal characters
         hash_guess = hashlib.sha256(guess).hexdigest()
         # if the hash_guess string has three zeros at the start of it, return True, else False
-        return hash_guess[:6] == "000000"
+        return hash_guess[:4] == "0000"
 
     def new_transaction(self, sender, recipient, amount):
         """
@@ -113,7 +113,7 @@ class Blockchain(object):
         """
 
         # append new dictionary to transactions list containing details passed in as parameters
-        self.transactions.append({
+        self.current_transactions.append({
             "sender": sender,
             "recipient": recipient,
             "amount": amount
