@@ -125,7 +125,7 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
-CORS(app, resources={r"/chain": {"origins": "http://localhost:port"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -197,13 +197,20 @@ def new_transaction():
     required = ["sender", "recipient", "amount"]
 
     if not all(k in data for k in required):
-        response = {"message": "Missing values. Must provide id and proof in req"}
-        return jsonify(response), 400
+        response = jsonify({"message": "Missing values. Must provide id and proof in req"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response, 400
 
     index = blockchain.new_transaction(data.get("sender"), data.get("recipient"), data.get("amount"))    
 
     response = jsonify({"message": f'Transaction will be added to block {index}'})
     response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response, 201    
 
 # Run the program on port 5000

@@ -82,7 +82,7 @@ if __name__ == '__main__':
         print("")
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
-        post_data = {"proof": new_proof, "id": "tony"}
+        post_data = {"proof": new_proof, "id": "sarah"}
 
         print("Attempting to mine")
         r = requests.post(url=node + "/mine", json=post_data)
