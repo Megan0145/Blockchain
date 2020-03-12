@@ -102,25 +102,25 @@ class Blockchain(object):
         return hash_guess[:6] == "000000"
 
     def new_transaction(self, sender, recipient, amount):
-    """
-    Create a method in the `Blockchain` class called `new_transaction` 
-    that adds a new transaction to the list of transactions:
+        """
+        Create a method in the `Blockchain` class called `new_transaction` 
+        that adds a new transaction to the list of transactions:
 
-    :param sender: <str> Address of the Recipient
-    :param recipient: <str> Address of the Recipient
-    :param amount: <int> Amount
-    :return: <int> The index of the `block` that will hold this transaction
-    """
+        :param sender: <str> Address of the Recipient
+        :param recipient: <str> Address of the Recipient
+        :param amount: <int> Amount
+        :return: <int> The index of the `block` that will hold this transaction
+        """
 
-    # append new dictionary to transactions list containing details passed in as parameters
-    self.transactions.append({
-        "sender": sender,
-        "recipient": recipient,
-        "amount": amount
-    })
-    # return the index of the block that this transaction will be saved in 
-    # (which is the index of the block currently being mined, which will be the index of the last block in the chain plus one)
-    return self.last_block["index"] + 1
+        # append new dictionary to transactions list containing details passed in as parameters
+        self.transactions.append({
+            "sender": sender,
+            "recipient": recipient,
+            "amount": amount
+        })
+        # return the index of the block that this transaction will be saved in 
+        # (which is the index of the block currently being mined, which will be the index of the last block in the chain plus one)
+        return self.last_block["index"] + 1
 
 
 # Instantiate our Node
@@ -157,7 +157,10 @@ def mine():
        
     # else the proof is valid 
     else:
-        # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
+        # call new_transaction function to add transaction (has to be done before we add the block to make sure that it's included in the new block)
+        # pass in "0" as the sender (we're creating new coins), node_identifier as the recipient (this will be the id of the miner) and 1 as the amount
+        blockchain.new_transaction("0", node_identifier, 1)
+        # then create a new block by calling the new_block method passing in the proof passed in the request body and the hash of the last block in the chain
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(proof, previous_hash)
         # return success message and the new block & status 200
