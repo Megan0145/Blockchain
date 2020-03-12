@@ -145,8 +145,8 @@ def mine():
     # else request body is valid   
     # check if the proof valid by calling valid_proof method, passing in the proof passed in req body and the previous hash obtained from calling hash function on last block in chain
     proof = data["proof"]
-    previous_hash = blockchain.hash(blockchain.last_block)
-    if blockchain.valid_proof(proof, previous_hash) is False:
+    last_block_string = json.dumps(blockchain.last_block, sort_keys=True)
+    if not blockchain.valid_proof(last_block_string, proof):
         # return failure message and status 400
         response = {
             "message": f'Failure. {data["proof"]} is not a valid proof'
@@ -156,6 +156,7 @@ def mine():
     # else the proof is valid 
     else:
         # create a new block by calling the new_block method passing in the proof passed in the request body and the hash that we have just generated
+        previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(proof, previous_hash)
         # return success message and the new block & status 200
         response = {
