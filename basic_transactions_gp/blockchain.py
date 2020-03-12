@@ -185,6 +185,21 @@ def get_last_block():
     response = {"last_block": blockchain.last_block}
     return jsonify(response), 200
 
+@app.route("/transactions/new", methods=['POST'])
+def new_transaction():
+    data = request.get_json()
+    required = ["sender", "recipient", "amount"]
+
+    if not all(k in data for k in required):
+        response = {"message": "Missing values. Must provide id and proof in req"}
+        return jsonify(response), 400
+
+    index = blockchain.new_transaction(data.get("sender"), data.get("recipient"), data.get("amount"))    
+
+    response = {"message": f'Transaction will be added to block {index}'}
+
+    return jsonify(response), 201    
+
 # Run the program on port 5000
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
