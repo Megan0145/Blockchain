@@ -2,7 +2,7 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
-
+from flask_cors import CORS, cross_origin
 from flask import Flask, jsonify, request
 
 
@@ -125,6 +125,7 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app, resources={r"/chain": {"origins": "http://localhost:port"}})
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -139,10 +140,11 @@ def mine():
     # check that id and proof present in request body
     # if not return error message and status 400
     if "id" not in data.keys() or "proof" not in data.keys():
-        response = {
+        response = jsonify({
             "message": "Please provide an id and a proof in request body"
-        }
-        return jsonify(response), 400
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 400
 
     # else request body is valid   
     # check if the proof valid by calling valid_proof method, passing in the proof passed in req body and the previous hash obtained from calling hash function on last block in chain
@@ -150,10 +152,11 @@ def mine():
     last_block_string = json.dumps(blockchain.last_block, sort_keys=True)
     if not blockchain.valid_proof(last_block_string, proof):
         # return failure message and status 400
-        response = {
+        response = jsonify({
             "message": f'Failure. {data["proof"]} is not a valid proof'
-        }    
-        return jsonify(response), 400  
+        })    
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 400  
        
     # else the proof is valid 
     else:
@@ -164,26 +167,29 @@ def mine():
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(proof, previous_hash)
         # return success message and the new block & status 200
-        response = {
+        response = jsonify({
             "message": "New Block Forged",
             "block" : block
-        }
-        return jsonify(response), 200      
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200      
 
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
-    response = {
+    response = jsonify({
         # Return the chain and its current length
         "length": len(blockchain.chain),
         "chain": blockchain.chain
-    }
-    return jsonify(response), 200
+    })
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
 
 @app.route("/last_block", methods=['GET'])
 def get_last_block():
-    response = {"last_block": blockchain.last_block}
-    return jsonify(response), 200
+    response = jsonify({"last_block": blockchain.last_block})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
 
 @app.route("/transactions/new", methods=['POST'])
 def new_transaction():
@@ -196,9 +202,9 @@ def new_transaction():
 
     index = blockchain.new_transaction(data.get("sender"), data.get("recipient"), data.get("amount"))    
 
-    response = {"message": f'Transaction will be added to block {index}'}
-
-    return jsonify(response), 201    
+    response = jsonify({"message": f'Transaction will be added to block {index}'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 201    
 
 # Run the program on port 5000
 if __name__ == '__main__':
